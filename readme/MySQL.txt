@@ -1,0 +1,10 @@
+DOCKER COMMAND FOR MYSQL CONTAINER
+docker run --name MySQL_GoodShop --hostname 127.0.0.1 --publish 3302:3306 --env MYSQL_ROOT_PASSWORD=goodpwforshop --env MYSQL_DATABASE=GoodShopDB --env MYSQL_USER=goodshop --env MYSQL_PASSWORD=goodshopPass --env MYSQL_GRANT="ALL PRIVILEGES" --detach mysql:8-oracle
+
+MYSQL WORKBENCH CONNECTION WITH MYSQL DOCKER CONTAINER
+- Connection Name: Docker_MySQL_GoodShop
+- hostname: 127.0.0.1
+- port: 3302:3306
+- username: goodshop
+- password: goodshopPass
+- Default Schema (DB Name): GoodShopDB
