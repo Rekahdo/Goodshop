@@ -10,7 +10,7 @@ import com.rekahdo.ecommerce.goodshop.enums.ErrorMessage;
 import com.rekahdo.ecommerce.goodshop.exceptions.classes.EmptyListException;
 import com.rekahdo.ecommerce.goodshop.exceptions.classes.UserIdNotFoundException;
 import com.rekahdo.ecommerce.goodshop.exceptions.classes.UsernameExistException;
-import com.rekahdo.ecommerce.goodshop.mappers.AppUserMapper;
+import com.rekahdo.ecommerce.goodshop._mappers.AppUserMapper;
 import com.rekahdo.ecommerce.goodshop.mappingJacksonValue.AppUserMJV;
 import com.rekahdo.ecommerce.goodshop.security.jjwt.JwtSymmetricService;
 import com.rekahdo.ecommerce.goodshop.utilities.AuthUser;

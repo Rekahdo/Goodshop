@@ -1,4 +1,4 @@
-package com.rekahdo.ecommerce.goodshop.mappers;
+package com.rekahdo.ecommerce.goodshop._mappers;
 
 import com.rekahdo.ecommerce.goodshop._controllers.AppUserController;
 import com.rekahdo.ecommerce.goodshop._dtos.AppUserDto;
