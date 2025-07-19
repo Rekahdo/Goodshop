@@ -39,8 +39,6 @@ public class Api_SecurityFilterChainConfig {
 		http.csrf(CsrfConfigurer::disable);
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
-//		http.oauth2ResourceServer(oauth -> oauth.jwt(jwt -> {}));
-//		http.oauth2Login(Customizer.withDefaults());
 		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
