@@ -17,9 +17,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public interface AppUserMapper {
 
 	@Mappings({
-		@Mapping(target = "password", ignore = true),
-		@Mapping(target = "roles", ignore = true),
-		@Mapping(target = "adminKey", ignore = true)
+			@Mapping(target = "password", ignore = true),
+			@Mapping(target = "roles", ignore = true),
+			@Mapping(target = "adminKey", ignore = true)
 	})
 	AppUserDto toDto(AppUser appUser);
 
@@ -54,3 +54,4 @@ public interface AppUserMapper {
 	}
 
 }
+

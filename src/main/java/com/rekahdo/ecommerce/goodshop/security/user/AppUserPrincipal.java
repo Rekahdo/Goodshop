@@ -43,23 +43,23 @@ public class AppUserPrincipal implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
-    }
+		return UserDetails.super.isAccountNonExpired();
+	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
+		return UserDetails.super.isAccountNonLocked();
+	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
-    }
+		return UserDetails.super.isCredentialsNonExpired();
+	}
 
 	@Override
 	public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
-    }
+		return UserDetails.super.isEnabled();
+	}
 
 	// Helper method to check if user has admin role
 	public boolean isAdmin() {

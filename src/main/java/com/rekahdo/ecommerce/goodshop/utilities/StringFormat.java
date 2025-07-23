@@ -3,7 +3,7 @@ package com.rekahdo.ecommerce.goodshop.utilities;
 public class StringFormat {
 
 	private static String removeWhiteSpace(String str) {
-		if(str == null || str.isBlank()) return "";
+		if(str == null || str.trim().isEmpty()) return "";
 		return str.trim().replaceAll("\\s", "");
 	}
 

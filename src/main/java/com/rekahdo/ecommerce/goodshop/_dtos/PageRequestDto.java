@@ -1,29 +1,38 @@
 package com.rekahdo.ecommerce.goodshop._dtos;
 
 import com.rekahdo.ecommerce.goodshop.utilities.StringFormat;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.Objects;
 
+@NoArgsConstructor
 public class PageRequestDto {
 
 	private Integer page = 0;
 
-	private Integer size = 2;
+	private Integer size = 10;
 
-	private Sort.Direction sort = Sort.Direction.ASC;
+	private boolean ascend = true;
 
 	private String sortByField = "id";
+
+	public PageRequestDto(Integer page, Integer size, boolean ascend, String sortByField) {
+		this.page = page;
+		this.size = size;
+		this.ascend = ascend;
+		this.sortByField = sortByField;
+	}
 
 	public Pageable getPageable(PageRequestDto dto){
 		Integer pageNo = (Objects.nonNull(dto.getPage()) ? dto.getPage() : this.page);
 		Integer pageSize = (Objects.nonNull(dto.getSize()) ? dto.getSize() : this.size);
-		Sort.Direction sort = (Objects.nonNull(dto.getSort()) ? dto.getSort() : this.sort);
+		Sort.Direction sort = (dto.isAscend() ? Sort.Direction.ASC : Sort.Direction.DESC);
 		String sortByField = (Objects.nonNull(dto.getSortByField()) ? dto.getSortByField() : this.sortByField);
 
-        return PageRequest.of(pageNo, pageSize, sort, StringFormat.split(sortByField));
+		return PageRequest.of(pageNo, pageSize, sort, StringFormat.split(sortByField));
 	}
 
 	public Integer getPage() {
@@ -42,12 +51,12 @@ public class PageRequestDto {
 		this.size = size;
 	}
 
-	public Sort.Direction getSort() {
-		return sort;
+	public boolean isAscend() {
+		return ascend;
 	}
 
-	public void setSort(Sort.Direction sort) {
-		this.sort = sort;
+	public void setAscend(boolean ascend) {
+		this.ascend = ascend;
 	}
 
 	public String getSortByField() {

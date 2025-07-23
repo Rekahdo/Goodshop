@@ -2,9 +2,10 @@ package com.rekahdo.ecommerce.goodshop.exceptions.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.rekahdo.ecommerce.goodshop.enums.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
@@ -26,7 +27,13 @@ public class ErrorResponse {
     private String exception;
 
     @JsonView(SingleErrorView.class)
-    private ErrorCode error;
+    private String line;
+
+    @JsonView(SingleErrorView.class)
+    private int code;
+
+    @JsonView(SingleErrorView.class)
+    private HttpStatus status;
 
     @JsonView(SingleErrorView.class)
     private String message;
@@ -41,24 +48,26 @@ public class ErrorResponse {
     private String description;
 
     @JsonView(SingleErrorView.class)
-    private String status;
+    private Instant timestamp = Instant.now();
 
     @JsonView(SingleErrorView.class)
-    private Instant timestamp = Instant.now();
+    private StackTraceElement[] trace;
 
     @JsonIgnore
     private boolean isMultiErrors;
 
-    public ErrorResponse(ErrorCode error, Exception ex, WebRequest request) {
+    public ErrorResponse(Exception ex, HttpStatusCode statusCode, WebRequest request) {
         this.exception = String.format("%s.class", ex.getClass().getSimpleName());
-        this.status = null;
+        this.line = fetchLine(ex);
+        this.code = statusCode.value();;
+        this.status = HttpStatus.valueOf(statusCode.value());;
         this.isMultiErrors = (ex instanceof BindException);
-        this.error = error;
         this.message = (!isMultiErrors ? ex.getMessage() : null);
         this.messages = (isMultiErrors ? ((BindException) ex).getAllErrors().stream()
                 .map(ObjectError::getDefaultMessage).toList() : Collections.emptyList());
         this.errorCount = (isMultiErrors ? ((BindException) ex).getErrorCount() : 1);
         this.description = request.getDescription(true);
+        this.trace = ex.getStackTrace();
     }
 
     public MappingJacksonValue fetchMJV() {
@@ -66,6 +75,14 @@ public class ErrorResponse {
         mappingJacksonValue.setSerializationView((isMultiErrors ?
                 MultiErrorView.class : SingleErrorView.class));
         return mappingJacksonValue;
+    }
+
+    private String fetchLine(Exception ex){
+        StackTraceElement[] stackTrace = ex.getStackTrace();
+        return stackTrace.length > 0
+                ? String.format("%s.%s:line-%d", stackTrace[0].getClassName(),
+                stackTrace[0].getMethodName(), stackTrace[0].getLineNumber())
+                : "Unknown";
     }
 
 }

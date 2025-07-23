@@ -4,13 +4,13 @@ import com.rekahdo.ecommerce.goodshop._controllers.AppUserController;
 import com.rekahdo.ecommerce.goodshop._dtos.AppUserDto;
 import com.rekahdo.ecommerce.goodshop._dtos.PageRequestDto;
 import com.rekahdo.ecommerce.goodshop._entities.AppUser;
+import com.rekahdo.ecommerce.goodshop._mappers.AppUserMapper;
 import com.rekahdo.ecommerce.goodshop._repository.AppUserRepository;
 import com.rekahdo.ecommerce.goodshop._repository.AuthorityRepository;
 import com.rekahdo.ecommerce.goodshop.enums.ErrorMessage;
 import com.rekahdo.ecommerce.goodshop.exceptions.classes.EmptyListException;
 import com.rekahdo.ecommerce.goodshop.exceptions.classes.UserIdNotFoundException;
 import com.rekahdo.ecommerce.goodshop.exceptions.classes.UsernameExistException;
-import com.rekahdo.ecommerce.goodshop._mappers.AppUserMapper;
 import com.rekahdo.ecommerce.goodshop.mappingJacksonValue.AppUserMJV;
 import com.rekahdo.ecommerce.goodshop.security.jjwt.JwtSymmetricService;
 import com.rekahdo.ecommerce.goodshop.utilities.AuthUser;
@@ -20,7 +20,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +32,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -45,7 +45,7 @@ public class AppUserService {
 	private AppUserRepository repo;
 
 	@Autowired
-	private AppUserMapper userMapper;
+	private AppUserMapper mapper;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -60,7 +60,7 @@ public class AppUserService {
 	private JwtSymmetricService jwtService;
 
 	@Autowired
-	private PageRequestUriBuilder pageLinkBuilder;
+	private PageRequestUriBuilder<AppUserDto> pageLinkBuilder;
 
 	@Autowired
 	private DBAdmin dbAdmin;
@@ -82,7 +82,7 @@ public class AppUserService {
 		}
 
 		dto.setCreatedAt(Instant.now()); dto.setUpdatedAt(Instant.now());
-		dto = userMapper.toDto(repo.save(userMapper.toEntity(dto)));
+		dto = mapper.toDto(repo.save(mapper.toEntity(dto)));
 		MappingJacksonValue mappingJacksonValue = AppUserMJV.publicFilter(dto);
 		return ResponseEntity.status(HttpStatus.CREATED).body(mappingJacksonValue);
 	}
@@ -95,44 +95,10 @@ public class AppUserService {
 		return ResponseEntity.ok(jwtService.createToken(authentication));
 	}
 
-	public ResponseEntity<?> getUsers(PageRequestDto dto, Pageable pageable) {
-		Page<AppUser> users = repo.findAll(pageable);
-		if (users.isEmpty()) throw new EmptyListException();
-
-		Page<AppUserDto> userDtos = users.map(userMapper::toDto);
-		PagedModel<AppUserDto> pagedModel = PagedModel.of(userDtos.getContent(),
-				new PagedModel.PageMetadata(userDtos.getSize(), userDtos.getNumber(),
-						userDtos.getTotalElements(), userDtos.getTotalPages()
-				)
-		);
-
-		if(userDtos.hasNext())
-			pagedModel.add(pageLinkBuilder.buildNextLink(methodOn(AppUserController.class).getUsers(dto), dto));
-
-		if(userDtos.hasPrevious())
-			pagedModel.add(pageLinkBuilder.buildPrevLink(methodOn(AppUserController.class).getUsers(dto), dto));
-
-		if(userDtos.getNumber() != 0)
-			pagedModel.add(pageLinkBuilder.buildFirstLink(methodOn(AppUserController.class).getUsers(dto), dto));
-
-		if(userDtos.getNumber() != userDtos.getTotalPages()-1)
-			pagedModel.add(pageLinkBuilder.buildLastLink(methodOn(AppUserController.class).getUsers(dto), dto, pagedModel));
-
-		return ResponseEntity.ok(AppUserMJV.publicFilter(pagedModel));
-	}
-
-	public ResponseEntity<?> getUser(Long id) {
-		AppUser user = repo.findById(id).orElseThrow(() -> new UserIdNotFoundException(id));
-		AppUserDto dto = userMapper.toDto(user);
-
-		if(AuthUser.IS_AN_ADMIN() || AuthUser.IS_A_MODERATOR())
-			dto.add(linkTo(methodOn(AppUserController.class).getUsers(new PageRequestDto())).withRel("users"));
-
-		return ResponseEntity.ok(AppUserMJV.privateFilter(dto));
-	}
-
-	public ResponseEntity<?> putUser(Long id, AppUserDto dto) {
-		AppUser user = repo.findById(id).orElseThrow(() -> new UserIdNotFoundException(id));
+	public ResponseEntity<?> putUser(AppUserDto dto) {
+		Optional<AppUser> optional = repo.findById(dto.getId());
+		if(optional.isEmpty())
+			throw new UserIdNotFoundException(dto.getId());
 
 		dto.setPassword(passwordEncoder.encode(dto.getPassword()));
 		dto.setUpdatedAt(Instant.now());
@@ -141,16 +107,19 @@ public class AppUserService {
 			if(AuthUser.IS_NOT_AN_ADMIN() && dto.adminKeyIsNotValid(adminKey))
 				throw new AccessDeniedException(ErrorMessage.ADMIN_KEY);
 
-			authorityRepository.deleteByAppUserId(id);
+			authorityRepository.deleteByAppUserId(dto.getId());
 		}
 
-		userMapper.updateEntity(dto, user);
-		dto = userMapper.toDto(repo.save(user));
+		AppUser user = optional.get();
+		mapper.updateEntity(dto, user);
+		dto = mapper.toDto(repo.save(user));
 		return ResponseEntity.ok(AppUserMJV.privateFilter(dto,true));
 	}
 
-	public ResponseEntity<?> patchUser(Long id, AppUserDto dto) {
-		AppUser user = repo.findById(id).orElseThrow(() -> new UserIdNotFoundException(id));
+	public ResponseEntity<?> patchUser(AppUserDto dto) {
+		Optional<AppUser> optional = repo.findById(dto.getId());
+		if(optional.isEmpty())
+			throw new UserIdNotFoundException(dto.getId());
 
 		if(dto.getPassword() != null)
 			dto.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -159,12 +128,32 @@ public class AppUserService {
 			if(AuthUser.IS_NOT_AN_ADMIN() && dto.adminKeyIsNotValid(adminKey))
 				throw new AccessDeniedException(ErrorMessage.ADMIN_KEY);
 
-			authorityRepository.deleteByAppUserId(id);
+			authorityRepository.deleteByAppUserId(dto.getId());
 		}
 
 		dto.setUpdatedAt(Instant.now());
-		userMapper.updateEntity(dto, user);
-		dto = userMapper.toDto(repo.save(user));
+		AppUser user = optional.get();
+		mapper.updateEntity(dto, user);
+		dto = mapper.toDto(repo.save(user));
+		return ResponseEntity.ok(AppUserMJV.privateFilter(dto));
+	}
+
+	public ResponseEntity<?> getUsers(PageRequestDto dto) {
+		Page<AppUser> users = repo.findAll(dto.getPageable(dto));
+		if (users.isEmpty()) throw new EmptyListException();
+
+		Page<AppUserDto> userDtos = users.map(mapper::toDto);
+		PagedModel<AppUserDto> pagedModel = pageLinkBuilder.getPagedModel(dto, userDtos, methodOn(AppUserController.class).getUsers(dto));
+		return ResponseEntity.ok(AppUserMJV.publicFilter(pagedModel));
+	}
+
+	public ResponseEntity<?> getUser(Long id) {
+		AppUser user = repo.findById(id).orElseThrow(() -> new UserIdNotFoundException(id));
+		AppUserDto dto = mapper.toDto(user);
+
+		if(AuthUser.IS_AN_ADMIN() || AuthUser.IS_A_MODERATOR())
+			dto.add(linkTo(methodOn(AppUserController.class).getUsers(new PageRequestDto())).withRel("users"));
+
 		return ResponseEntity.ok(AppUserMJV.privateFilter(dto));
 	}
 
@@ -173,3 +162,4 @@ public class AppUserService {
 		return ResponseEntity.ok("USER WITH ID '" + id + "' HAS BEEN SUCCESSFULLY DELETED");
 	}
 }
+

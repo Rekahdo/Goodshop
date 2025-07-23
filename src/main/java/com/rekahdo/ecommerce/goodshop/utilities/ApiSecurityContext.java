@@ -1,9 +1,8 @@
 package com.rekahdo.ecommerce.goodshop.utilities;
 
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import com.rekahdo.ecommerce.goodshop._entities.AppUser;
 import com.rekahdo.ecommerce.goodshop.security.user.AppUserPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public final class ApiSecurityContext {
 
