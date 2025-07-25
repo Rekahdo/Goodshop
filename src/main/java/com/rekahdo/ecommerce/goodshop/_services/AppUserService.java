@@ -1,8 +1,8 @@
 package com.rekahdo.ecommerce.goodshop._services;
 
 import com.rekahdo.ecommerce.goodshop._controllers.AppUserController;
-import com.rekahdo.ecommerce.goodshop._dtos.AppUserDto;
-import com.rekahdo.ecommerce.goodshop._dtos.PageRequestDto;
+import com.rekahdo.ecommerce.goodshop._dtos.entities.AppUserDto;
+import com.rekahdo.ecommerce.goodshop._dtos.paginations.AppUserPageRequestDto;
 import com.rekahdo.ecommerce.goodshop._entities.AppUser;
 import com.rekahdo.ecommerce.goodshop._mappers.AppUserMapper;
 import com.rekahdo.ecommerce.goodshop._repository.AppUserRepository;
@@ -60,7 +60,7 @@ public class AppUserService {
 	private JwtSymmetricService jwtService;
 
 	@Autowired
-	private PageRequestUriBuilder<AppUserDto> pageLinkBuilder;
+	private PageRequestUriBuilder<AppUserDto, AppUserPageRequestDto> pageLinkBuilder;
 
 	@Autowired
 	private DBAdmin dbAdmin;
@@ -95,10 +95,10 @@ public class AppUserService {
 		return ResponseEntity.ok(jwtService.createToken(authentication));
 	}
 
-	public ResponseEntity<?> putUser(AppUserDto dto) {
-		Optional<AppUser> optional = repo.findById(dto.getId());
+	public ResponseEntity<?> editUser(Long userId, AppUserDto dto) {
+		Optional<AppUser> optional = repo.findById(userId);
 		if(optional.isEmpty())
-			throw new UserIdNotFoundException(dto.getId());
+			throw new UserIdNotFoundException(userId);
 
 		dto.setPassword(passwordEncoder.encode(dto.getPassword()));
 		dto.setUpdatedAt(Instant.now());
@@ -107,7 +107,7 @@ public class AppUserService {
 			if(AuthUser.IS_NOT_AN_ADMIN() && dto.adminKeyIsNotValid(adminKey))
 				throw new AccessDeniedException(ErrorMessage.ADMIN_KEY);
 
-			authorityRepository.deleteByAppUserId(dto.getId());
+			authorityRepository.deleteByAppUserId(userId);
 		}
 
 		AppUser user = optional.get();
@@ -116,10 +116,10 @@ public class AppUserService {
 		return ResponseEntity.ok(AppUserMJV.privateFilter(dto,true));
 	}
 
-	public ResponseEntity<?> patchUser(AppUserDto dto) {
-		Optional<AppUser> optional = repo.findById(dto.getId());
+	public ResponseEntity<?> patchUser(Long userId, AppUserDto dto) {
+		Optional<AppUser> optional = repo.findById(userId);
 		if(optional.isEmpty())
-			throw new UserIdNotFoundException(dto.getId());
+			throw new UserIdNotFoundException(userId);
 
 		if(dto.getPassword() != null)
 			dto.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -128,7 +128,7 @@ public class AppUserService {
 			if(AuthUser.IS_NOT_AN_ADMIN() && dto.adminKeyIsNotValid(adminKey))
 				throw new AccessDeniedException(ErrorMessage.ADMIN_KEY);
 
-			authorityRepository.deleteByAppUserId(dto.getId());
+			authorityRepository.deleteByAppUserId(userId);
 		}
 
 		dto.setUpdatedAt(Instant.now());
@@ -138,7 +138,7 @@ public class AppUserService {
 		return ResponseEntity.ok(AppUserMJV.privateFilter(dto));
 	}
 
-	public ResponseEntity<?> getUsers(PageRequestDto dto) {
+	public ResponseEntity<?> getUsers(AppUserPageRequestDto dto) {
 		Page<AppUser> users = repo.findAll(dto.getPageable(dto));
 		if (users.isEmpty()) throw new EmptyListException();
 
@@ -152,7 +152,7 @@ public class AppUserService {
 		AppUserDto dto = mapper.toDto(user);
 
 		if(AuthUser.IS_AN_ADMIN() || AuthUser.IS_A_MODERATOR())
-			dto.add(linkTo(methodOn(AppUserController.class).getUsers(new PageRequestDto())).withRel("users"));
+			dto.add(linkTo(methodOn(AppUserController.class).getUsers(new AppUserPageRequestDto())).withRel("users"));
 
 		return ResponseEntity.ok(AppUserMJV.privateFilter(dto));
 	}
@@ -162,4 +162,3 @@ public class AppUserService {
 		return ResponseEntity.ok("USER WITH ID '" + id + "' HAS BEEN SUCCESSFULLY DELETED");
 	}
 }
-

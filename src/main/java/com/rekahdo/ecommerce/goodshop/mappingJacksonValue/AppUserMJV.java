@@ -3,7 +3,7 @@ package com.rekahdo.ecommerce.goodshop.mappingJacksonValue;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.rekahdo.ecommerce.goodshop._dtos.AppUserDto;
+import com.rekahdo.ecommerce.goodshop._dtos.entities.AppUserDto;
 import org.springframework.http.converter.json.MappingJacksonValue;
 
 public final class AppUserMJV {

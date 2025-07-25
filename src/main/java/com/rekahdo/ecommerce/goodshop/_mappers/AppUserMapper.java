@@ -1,7 +1,7 @@
 package com.rekahdo.ecommerce.goodshop._mappers;
 
 import com.rekahdo.ecommerce.goodshop._controllers.AppUserController;
-import com.rekahdo.ecommerce.goodshop._dtos.AppUserDto;
+import com.rekahdo.ecommerce.goodshop._dtos.entities.AppUserDto;
 import com.rekahdo.ecommerce.goodshop._entities.AppUser;
 import com.rekahdo.ecommerce.goodshop._entities.Authority;
 import com.rekahdo.ecommerce.goodshop.enums.AuthorityRole;

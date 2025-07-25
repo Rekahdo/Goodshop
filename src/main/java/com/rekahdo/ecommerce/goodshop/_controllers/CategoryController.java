@@ -1,7 +1,8 @@
 package com.rekahdo.ecommerce.goodshop._controllers;
 
-import com.rekahdo.ecommerce.goodshop._dtos.ProfileDto;
-import com.rekahdo.ecommerce.goodshop._services.ProfileService;
+import com.rekahdo.ecommerce.goodshop._dtos.entities.AddressDto;
+import com.rekahdo.ecommerce.goodshop._dtos.entities.CategoryDto;
+import com.rekahdo.ecommerce.goodshop._services.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,34 +12,38 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @EnableMethodSecurity
-@RequestMapping(path = "/api/v1/users/{userId}/profile")
+@RequestMapping(path = "/api/v1/categories")
 public class CategoryController {
 
 	@Autowired
-	private ProfileService service;
+	private CategoryService service;
 
-	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId) OR hasRole('ADMIN') OR hasRole('MODERATOR')")
+	@PreAuthorize("hasRole('ADMIN') OR hasRole('EDITOR')")
+	@PostMapping("")
+	public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryDto dto){
+		return service.createCategory(dto);
+	}
+
+	@PreAuthorize("hasRole('ADMIN') OR hasRole('EDITOR')")
+	@PutMapping("")
+	public ResponseEntity<?> editCategory(@Valid @RequestBody CategoryDto dto){
+		return service.editCategory(dto);
+	}
+
 	@GetMapping("")
-	public ResponseEntity<?> getProfile(@PathVariable Long userId) {
-		return service.getProfile(userId);
+	public ResponseEntity<?> getCategories(){
+		return service.getCategories();
 	}
 
-	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId) OR hasRole('ADMIN') OR hasRole('EDITOR')")
-	@PutMapping(path = "", consumes = "application/json")
-	public ResponseEntity<?> putProfile(@PathVariable Long userId, @Valid @RequestBody ProfileDto dto) {
-		return service.putProfile(userId, dto);
+	@GetMapping("/{categoryId}")
+	public ResponseEntity<?> getCategory(@PathVariable Long categoryId){
+		return service.getCategory(categoryId);
 	}
 
-	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId) OR hasRole('ADMIN') OR hasRole('EDITOR')")
-	@PatchMapping(path = "", consumes = "application/json")
-	public ResponseEntity<?> patchProfile(@PathVariable Long userId, @Valid @RequestBody ProfileDto dto) {
-		return service.patchProfile(userId, dto);
-	}
-
-	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId) OR hasRole('ADMIN')")
-	@DeleteMapping(path = "")
-	public ResponseEntity<?> deleteProfile(@PathVariable Long userId) {
-		return service.deleteProfile(userId);
+	@PreAuthorize("hasRole('ADMIN') OR hasRole('EDITOR')")
+	@DeleteMapping("/{categoryId}")
+	public ResponseEntity<?> deleteCategory(@PathVariable Long categoryId){
+		return service.deleteCategory(categoryId);
 	}
 
 }

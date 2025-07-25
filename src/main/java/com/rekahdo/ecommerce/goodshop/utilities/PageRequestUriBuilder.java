@@ -1,7 +1,7 @@
 package com.rekahdo.ecommerce.goodshop.utilities;
 
-import com.rekahdo.ecommerce.goodshop._dtos.EntityDto;
-import com.rekahdo.ecommerce.goodshop._dtos.PageRequestDto;
+import com.rekahdo.ecommerce.goodshop._dtos.entities.EntityDto;
+import com.rekahdo.ecommerce.goodshop._dtos.paginations.PageRequestDto;
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.beans.support.PropertyComparator;
@@ -19,9 +19,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Component
 @Lazy
-public class PageRequestUriBuilder<DTO extends EntityDto<DTO>> {
+public class PageRequestUriBuilder<ENTITY_DTO extends EntityDto<ENTITY_DTO>, PAGE_DTO extends PageRequestDto> {
 
-	public <ENTITY> Page<ENTITY> getPagedList(PageRequestDto requestDto, List<ENTITY> entities){
+	public <ENTITY> Page<ENTITY> getPagedList(PAGE_DTO requestDto, List<ENTITY> entities){
 		// PagedListHolder
 		PagedListHolder<ENTITY> pagedListHolder = new PagedListHolder<>(entities);
 		pagedListHolder.setPage(requestDto.getPage());
@@ -33,11 +33,11 @@ public class PageRequestUriBuilder<DTO extends EntityDto<DTO>> {
 		PropertyComparator.sort(pageSlice, new MutableSortDefinition(requestDto.getSortByField(), true, ascending));
 
 		// PageImpl
-		return new PageImpl<>(pageSlice, new PageRequestDto().getPageable(requestDto), entities.size());
+		return new PageImpl<>(pageSlice, requestDto.getPageable(requestDto), entities.size());
 	}
 
-	public PagedModel<DTO> getPagedModel(PageRequestDto requestDto, Page<DTO> pageDto, Object methodOn){
-		PagedModel<DTO> pagedModel = PagedModel.of(pageDto.getContent(),
+	public PagedModel<ENTITY_DTO> getPagedModel(PAGE_DTO requestDto, Page<ENTITY_DTO> pageDto, Object methodOn){
+		PagedModel<ENTITY_DTO> pagedModel = PagedModel.of(pageDto.getContent(),
 				new PagedModel.PageMetadata(pageDto.getSize(), pageDto.getNumber(),
 						pageDto.getTotalElements(), pageDto.getTotalPages()
 				)
@@ -67,7 +67,7 @@ public class PageRequestUriBuilder<DTO extends EntityDto<DTO>> {
 		return pagedModel;
 	}
 
-	private Link buildLink(Object methodOn, PageRequestDto dto, Integer page, String relation) {
+	private Link buildLink(Object methodOn, PAGE_DTO dto, Integer page, String relation) {
 		UriComponentsBuilder builder = linkTo(methodOn).toUriComponentsBuilder()
 				.queryParam("page", page)
 				.queryParam("size", dto.getSize())

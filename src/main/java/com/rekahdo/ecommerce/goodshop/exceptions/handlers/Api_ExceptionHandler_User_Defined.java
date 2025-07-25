@@ -1,9 +1,9 @@
 package com.rekahdo.ecommerce.goodshop.exceptions.handlers;
 
-import com.rekahdo.project.spring_boot.exceptions.classes.EmptyListException;
-import com.rekahdo.project.spring_boot.exceptions.classes.UserIdNotFoundException;
-import com.rekahdo.project.spring_boot.exceptions.classes.UsernameExistException;
-import com.rekahdo.project.spring_boot.exceptions.model.ErrorResponse;
+import com.rekahdo.ecommerce.goodshop.exceptions.classes.EmptyListException;
+import com.rekahdo.ecommerce.goodshop.exceptions.classes.UserIdNotFoundException;
+import com.rekahdo.ecommerce.goodshop.exceptions.classes.UsernameExistException;
+import com.rekahdo.ecommerce.goodshop.exceptions.model.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

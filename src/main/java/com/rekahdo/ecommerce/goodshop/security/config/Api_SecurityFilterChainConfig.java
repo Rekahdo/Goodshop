@@ -5,6 +5,7 @@ import com.rekahdo.ecommerce.goodshop.security.user.AppUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -33,6 +34,7 @@ public class Api_SecurityFilterChainConfig {
 				.requestMatchers("/api/v*/*/test/mapper").permitAll()
 				.requestMatchers("/api/v*/users/register").permitAll()
 				.requestMatchers("/api/v*/users/login").permitAll()
+				.requestMatchers(HttpMethod.GET, "/api/v*/categories", "/api/v*/products").permitAll()
 				.requestMatchers("/h2-console/**").permitAll()
 				.anyRequest().authenticated());
 		http.httpBasic(Customizer.withDefaults());

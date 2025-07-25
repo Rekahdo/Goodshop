@@ -1,6 +1,6 @@
 package com.rekahdo.ecommerce.goodshop.exceptions.handlers;
 
-import com.rekahdo.project.spring_boot.exceptions.model.ErrorResponse;
+import com.rekahdo.ecommerce.goodshop.exceptions.model.ErrorResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;

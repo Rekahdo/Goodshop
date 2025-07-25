@@ -1,4 +1,4 @@
-package com.rekahdo.ecommerce.goodshop._dtos;
+package com.rekahdo.ecommerce.goodshop._dtos.entities;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.rekahdo.ecommerce.goodshop.enums.AuthorityRole;

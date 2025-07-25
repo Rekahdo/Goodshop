@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @DependsOn("appUserPopulator")
-@Profile({"dev", "prod"})
+@Profile("dev")
 public class AddressPopulator {
 
     @PostConstruct
-    public void insert(){
+    public void addAddress(){
 
     }
 

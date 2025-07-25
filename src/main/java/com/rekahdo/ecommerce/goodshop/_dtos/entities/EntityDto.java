@@ -1,4 +1,4 @@
-package com.rekahdo.ecommerce.goodshop._dtos;
+package com.rekahdo.ecommerce.goodshop._dtos.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

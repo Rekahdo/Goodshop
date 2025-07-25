@@ -1,5 +1,5 @@
 package com.rekahdo.ecommerce.goodshop.exceptions.handlers;
-import com.rekahdo.project.spring_boot.exceptions.model.ErrorResponse;
+import com.rekahdo.ecommerce.goodshop.exceptions.model.ErrorResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

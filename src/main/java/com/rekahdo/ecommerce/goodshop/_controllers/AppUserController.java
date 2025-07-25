@@ -1,7 +1,7 @@
 package com.rekahdo.ecommerce.goodshop._controllers;
 
-import com.rekahdo.ecommerce.goodshop._dtos.AppUserDto;
-import com.rekahdo.ecommerce.goodshop._dtos.PageRequestDto;
+import com.rekahdo.ecommerce.goodshop._dtos.entities.AppUserDto;
+import com.rekahdo.ecommerce.goodshop._dtos.paginations.AppUserPageRequestDto;
 import com.rekahdo.ecommerce.goodshop._services.AppUserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,21 +28,21 @@ public class AppUserController {
 		return service.loginUser(dto);
 	}
 
-	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #dto) OR hasRole('ADMIN') OR hasRole('EDITOR')")
-	@PutMapping(path = "", consumes = "application/json")
-	public ResponseEntity<?> putUser(@Valid @RequestBody AppUserDto dto) {
-		return service.putUser(dto);
+	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId) OR hasRole('ADMIN') OR hasRole('EDITOR')")
+	@PutMapping(path = "/{userId}", consumes = "application/json")
+	public ResponseEntity<?> editUser(@PathVariable Long userId, @Valid @RequestBody AppUserDto dto) {
+		return service.editUser(userId, dto);
 	}
 
-	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #dto) OR hasRole('ADMIN') OR hasRole('EDITOR')")
-	@PatchMapping(path = "", consumes = "application/json")
-	public ResponseEntity<?> patchUser(@Valid @RequestBody AppUserDto dto) {
-		return service.patchUser(dto);
+	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId) OR hasRole('ADMIN') OR hasRole('EDITOR')")
+	@PatchMapping(path = "/{userId}", consumes = "application/json")
+	public ResponseEntity<?> patchUser(@PathVariable Long userId, @Valid @RequestBody AppUserDto dto) {
+		return service.patchUser(userId, dto);
 	}
 
 	@PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
 	@GetMapping("")
-	public ResponseEntity<?> getUsers(@ModelAttribute PageRequestDto dto) {
+	public ResponseEntity<?> getUsers(@ModelAttribute AppUserPageRequestDto dto) {
 		return service.getUsers(dto);
 	}
 

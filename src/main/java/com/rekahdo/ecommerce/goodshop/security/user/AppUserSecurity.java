@@ -1,6 +1,6 @@
 package com.rekahdo.ecommerce.goodshop.security.user;
 
-import com.rekahdo.ecommerce.goodshop._dtos.AppUserDto;
+import com.rekahdo.ecommerce.goodshop._dtos.entities.AppUserDto;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
