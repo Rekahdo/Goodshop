@@ -1,57 +1,26 @@
 package com.rekahdo.ecommerce.goodshop._mappers;
 
 import com.rekahdo.ecommerce.goodshop._controllers.AppUserController;
+import com.rekahdo.ecommerce.goodshop._controllers.AuthorityController;
+import com.rekahdo.ecommerce.goodshop._controllers.ProfileController;
 import com.rekahdo.ecommerce.goodshop._dtos.entities.AppUserDto;
 import com.rekahdo.ecommerce.goodshop._entities.AppUser;
-import com.rekahdo.ecommerce.goodshop._entities.Authority;
-import com.rekahdo.ecommerce.goodshop.enums.AuthorityRole;
-import org.mapstruct.*;
-
-import java.util.Arrays;
-import java.util.List;
+import org.mapstruct.AfterMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Mapper(componentModel = "spring")
-public interface AppUserMapper {
+public interface AppUserMapper extends Api_Mapper<AppUser, AppUserDto>{
 
-	@Mappings({
-			@Mapping(target = "password", ignore = true),
-			@Mapping(target = "roles", ignore = true),
-			@Mapping(target = "adminKey", ignore = true)
-	})
-	AppUserDto toDto(AppUser appUser);
-
-	@Mapping(target = "authorities", ignore = true)
-	AppUser toEntity(AppUserDto appUserDto);
-
-	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-	@Mapping(target = "authorities", ignore = true)
-	void updateEntity(AppUserDto source, @MappingTarget AppUser target);
-
-	@AfterMapping
-	default void afterMappingToEntity(@MappingTarget AppUser target, AppUserDto source) {
-		// Map source roles to target authorities
-		if(source.getRoles() != null) {
-			List<Authority> authorities = Arrays.stream(source.fetchRolesAsAuthorityRoles())
-					.map(role -> new Authority(role, target))
-					.toList();
-			target.setAuthorities(authorities);
-		}
-	}
-
+	@Override
 	@AfterMapping
 	default void afterMappingToDto(@MappingTarget AppUserDto target, AppUser source) {
-		// Map source authorities to target roles
-		if(source.getAuthorities() != null)
-			target.setRoles(source.fetchAuthoritiesAsRoles());
-
-		target.putRole(AuthorityRole.USER);
-
-		// Add links to dto
 		target.add(linkTo(methodOn(AppUserController.class).getUser(source.getId())).withSelfRel());
+		target.add(linkTo(methodOn(AuthorityController.class).getAuthority(source.getId())).withRel("authorities"));
+		target.add(linkTo(methodOn(ProfileController.class).getProfile(source.getId())).withRel("profile"));
 	}
 
 }
-

@@ -2,15 +2,13 @@ package com.rekahdo.ecommerce.goodshop.exceptions.classes;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Getter
-public class UserIdNotFoundException extends Api_Exception {
+public class UserIdNotFoundException extends ResponseStatusException {
 
-	private final Long userId;
-
-	public UserIdNotFoundException(Long userId) {
-		super(String.format("USER WITH ID '%d' NOT FOUND", userId), HttpStatus.NOT_FOUND);
-		this.userId = userId;
+	public UserIdNotFoundException() {
+		super(HttpStatus.NOT_FOUND, "USER ID NOT FOUND".toUpperCase());
 	}
 
 }

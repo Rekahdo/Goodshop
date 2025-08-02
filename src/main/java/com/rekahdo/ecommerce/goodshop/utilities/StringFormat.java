@@ -2,13 +2,29 @@ package com.rekahdo.ecommerce.goodshop.utilities;
 
 public class StringFormat {
 
-	private static String removeWhiteSpace(String str) {
+	private static String replaceWith(String str, String find, String replace) {
 		if(str == null || str.trim().isEmpty()) return "";
-		return str.trim().replaceAll("\\s", "");
+		return str.trim().replaceAll(find, replace);
 	}
 
-	public static String[] split(String str) {
-		return removeWhiteSpace(str).split(",");
+	public static String removeWhiteSpace(String str) {
+		return replaceWith(str, "\\s", "");
+	}
+
+	public static String removeUnderscore(String str) {
+		return replaceWith(str, "_", " ");
+	}
+
+	public static String[] splitByComma(String str) {
+		return splitBy(str, ",");
+	}
+
+	public static String[] splitByHyphen(String str) {
+		return splitBy(str, "-");
+	}
+
+	private static String[] splitBy(String str, String by) {
+		return removeWhiteSpace(str).split(by);
 	}
 
 	public static String join(String[] array) {
@@ -16,7 +32,7 @@ public class StringFormat {
 	}
 
 	public static String join(String str) {
-		return join(split(str));
+		return join(splitByComma(str));
 	}
 
 	public static boolean isLowercase(String str) {
@@ -30,7 +46,6 @@ public class StringFormat {
 	public static boolean hasValue(String str) {
 		return str != null && !str.trim().isEmpty();
 	}
-
 
 
 }

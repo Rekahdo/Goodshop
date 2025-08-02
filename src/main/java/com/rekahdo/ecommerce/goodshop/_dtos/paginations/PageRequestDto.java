@@ -1,17 +1,24 @@
 package com.rekahdo.ecommerce.goodshop._dtos.paginations;
 
+import com.rekahdo.ecommerce.goodshop._dtos.entities.EntityDto;
 import com.rekahdo.ecommerce.goodshop.utilities.StringFormat;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.beans.support.MutableSortDefinition;
+import org.springframework.beans.support.PagedListHolder;
+import org.springframework.beans.support.PropertyComparator;
+import org.springframework.data.domain.*;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Objects;
+import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Getter
 @Setter
-public abstract class PageRequestDto {
+public abstract class PageRequestDto<ENTITY, DTO extends EntityDto<DTO>> {
 
 	protected Integer page = 0;
 
@@ -19,42 +26,60 @@ public abstract class PageRequestDto {
 
 	protected boolean ascend = true;
 
-	public String sortByField = "id";
+	protected String sortByField = "id";
 
-	protected PageRequestDto(Integer size) {
-		this.size = size;
+	public Pageable getPageable(){
+		Sort.Direction sort = (isAscend() ? Sort.Direction.ASC : Sort.Direction.DESC);
+		return PageRequest.of(page, size, sort, StringFormat.splitByComma(sortByField));
 	}
 
-	protected PageRequestDto(boolean ascend) {
-		this.ascend = ascend;
+	public Page<ENTITY> getPagedList(List<ENTITY> items){
+		// PagedListHolder
+		PagedListHolder<ENTITY> pagedListHolder = new PagedListHolder<>(items);
+		pagedListHolder.setPage(this.getPage());
+		pagedListHolder.setPageSize(this.getSize());
+
+		// Property Comparator
+		List<ENTITY> pageSlice = pagedListHolder.getPageList();
+		boolean ascending = this.isAscend();
+		PropertyComparator.sort(pageSlice, new MutableSortDefinition(this.getSortByField(), true, ascending));
+
+		// PageImpl
+		return new PageImpl<>(pageSlice, this.getPageable(), items.size());
 	}
 
-	protected PageRequestDto(String sortByField) {
-		this.sortByField = sortByField;
+	public PagedModel<DTO> getPagedModel(Page<DTO> pageDto, Object invocationValue){
+		PagedModel<DTO> pagedModel = PagedModel.of(pageDto.getContent(),
+				new PagedModel.PageMetadata(pageDto.getSize(), pageDto.getNumber(),
+						pageDto.getTotalElements(), pageDto.getTotalPages()
+				)
+		);
+
+		if(pageDto.hasNext())
+			pagedModel.add(buildLink(this.getPage()+1, "next", invocationValue));
+
+		if(pageDto.hasPrevious())
+			pagedModel.add(buildLink(this.getPage()-1, "prev", invocationValue));
+
+		if(pageDto.getNumber() != 0)
+			pagedModel.add(buildLink(0, "first", invocationValue));
+
+		if(pageDto.getNumber() != pageDto.getTotalPages()-1){
+			assert pagedModel.getMetadata() != null;
+			int lastPageNo = (int)(pagedModel.getMetadata().getTotalPages()-1);
+			pagedModel.add(buildLink(lastPageNo, "last", invocationValue));
+		}
+
+		return pagedModel;
 	}
 
-	protected PageRequestDto(Integer size, boolean ascend) {
-		this(size);
-		this.ascend = ascend;
-	}
-
-	protected PageRequestDto(Integer size, String sortByField) {
-		this(size);
-		this.sortByField = sortByField;
-	}
-
-	protected PageRequestDto(Integer size, boolean ascend, String sortByField) {
-		this(size, ascend);
-		this.sortByField = sortByField;
-	}
-
-	public Pageable getPageable(PageRequestDto dto){
-		Integer pageNo = (Objects.nonNull(dto.getPage()) ? dto.getPage() : this.page);
-		Integer pageSize = (Objects.nonNull(dto.getSize()) ? dto.getSize() : this.size);
-		Sort.Direction sort = (dto.isAscend() ? Sort.Direction.ASC : Sort.Direction.DESC);
-		String sortByField = (Objects.nonNull(dto.getSortByField()) ? dto.getSortByField() : this.sortByField);
-
-		return PageRequest.of(pageNo, pageSize, sort, StringFormat.split(sortByField));
+	private Link buildLink(Integer page, String relation, Object invocationValue) {
+		UriComponentsBuilder builder = linkTo(invocationValue).toUriComponentsBuilder()
+				.queryParam("page", page)
+				.queryParam("size", this.getSize())
+				.queryParam("ascend", this.isAscend())
+				.queryParam("sortByField", this.getSortByField());
+		return Link.of(builder.build().toUriString(), relation);
 	}
 
 }

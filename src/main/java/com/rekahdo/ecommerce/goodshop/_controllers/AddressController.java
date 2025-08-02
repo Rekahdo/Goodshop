@@ -24,9 +24,10 @@ public class AddressController {
 	}
 
 	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId)")
-	@PutMapping("")
-	public ResponseEntity<?> editAddress(@PathVariable Long userId, @Valid @RequestBody AddressDto dto){
-		return service.editAddress(userId, dto);
+	@PutMapping("/{addressId}")
+	public ResponseEntity<?> editAddress(@PathVariable Long userId, @PathVariable Long addressId,
+										 @Valid @RequestBody AddressDto dto){
+		return service.editAddress(userId, addressId, dto);
 	}
 
 	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId) OR hasRole('ADMIN') OR hasRole('MODERATOR')")

@@ -3,10 +3,12 @@ package com.rekahdo.ecommerce.goodshop.security.user;
 import com.rekahdo.ecommerce.goodshop._entities.AppUser;
 import com.rekahdo.ecommerce.goodshop.enums.AuthorityRole;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class AppUserPrincipal implements UserDetails {
 
@@ -37,8 +39,10 @@ public class AppUserPrincipal implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return appUser.getAuthorities() != null || !appUser.getAuthorities().isEmpty()
-				? appUser.fetchAuthoritiesAsGrantedAuthorities() : Collections.emptyList();
+		return appUser.getAuthority() == null
+				? List.of(new SimpleGrantedAuthority("ROLE_" + AuthorityRole.USER.getValue()))
+				: List.of(new SimpleGrantedAuthority("ROLE_" + AuthorityRole.USER.getValue()),
+				new SimpleGrantedAuthority("ROLE_" + appUser.getAuthority().getRole().getValue()));
 	}
 
 	@Override

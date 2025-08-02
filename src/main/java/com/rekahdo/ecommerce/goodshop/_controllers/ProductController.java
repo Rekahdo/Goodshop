@@ -2,6 +2,7 @@ package com.rekahdo.ecommerce.goodshop._controllers;
 
 import com.rekahdo.ecommerce.goodshop._dtos.entities.CategoryDto;
 import com.rekahdo.ecommerce.goodshop._dtos.entities.ProductDto;
+import com.rekahdo.ecommerce.goodshop._dtos.paginations.ProductPageRequestDto;
 import com.rekahdo.ecommerce.goodshop._services.ProductService;
 import com.rekahdo.ecommerce.goodshop._services.ProfileService;
 import jakarta.validation.Valid;
@@ -26,14 +27,15 @@ public class ProductController {
 	}
 
 	@PreAuthorize("hasRole('ADMIN') OR hasRole('EDITOR')")
-	@PutMapping("")
-	public ResponseEntity<?> editProduct(@Valid @RequestBody ProductDto dto){
-		return service.editProduct(dto);
+	@PutMapping("/{productId}")
+	public ResponseEntity<?> editProduct(@PathVariable Long productId, @Valid @RequestBody ProductDto dto){
+		return service.editProduct(productId, dto);
 	}
 
 	@GetMapping("")
-	public ResponseEntity<?> getProducts(){
-		return service.getProducts();
+	public ResponseEntity<?> getProducts(@ModelAttribute ProductPageRequestDto dto,
+			@RequestParam(required = false, defaultValue = "0") Long categoryId){
+		return service.getProducts(dto, categoryId);
 	}
 
 	@GetMapping("/{productId}")

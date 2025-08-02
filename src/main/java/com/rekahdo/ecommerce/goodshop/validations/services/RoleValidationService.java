@@ -29,7 +29,7 @@ public class RoleValidationService implements Api_ValidationService<String>{
         errors.clear();
         if(roles == null) return errors;
 
-        Arrays.stream(StringFormat.split(roles))
+        Arrays.stream(StringFormat.splitByComma(roles))
                 .forEach(role -> {
                     if(!validRoles.contains(role))
                         errors.add(String.format("Invalid Role: '%s'. Valid Roles Are: %s. Is Case Sensitive!!!", role, validRoles));

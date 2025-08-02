@@ -1,10 +1,15 @@
 package com.rekahdo.ecommerce.goodshop._populators;
 
 import com.rekahdo.ecommerce.goodshop._dtos.entities.ProductDto;
+import com.rekahdo.ecommerce.goodshop._entities.Category;
+import com.rekahdo.ecommerce.goodshop._entities.Product;
+import com.rekahdo.ecommerce.goodshop._repository.ProductRepository;
 import com.rekahdo.ecommerce.goodshop._services.ProductService;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -15,28 +20,25 @@ import java.math.MathContext;
 @Profile("dev")
 public class ProductPopulator {
 
-    private final ProductService service;
-
-    public ProductPopulator(ProductService service) {
-        this.service = service;
-    }
+    @Autowired
+    private ProductRepository repository;
 
     @PostConstruct
-    private void createUsers(){
+    private void insertIntoRepository(){
         // PHONES
-        service.createProduct(new ProductDto("Samsung Galaxy A71 5G", "A black samsung galaxy", new BigDecimal("350000", new MathContext(2)), (byte)1));
-        service.createProduct(new ProductDto("IPhone XS Max", "A gray IPhone xs max", new BigDecimal("650000", new MathContext(2)), (byte)1));
-        service.createProduct(new ProductDto("Nokia 3310", "A brand new Nokia 3310", new BigDecimal("50000", new MathContext(2)), (byte)1));
+        repository.save(new Product("Samsung Galaxy A71 5G", "A black samsung galaxy", new BigDecimal("350000", new MathContext(2)), new Category(1L)));
+        repository.save(new Product("IPhone XS Max", "A gray IPhone xs max", new BigDecimal("650000", new MathContext(2)), new Category(1L)));
+        repository.save(new Product("Nokia 3310", "A brand new Nokia 3310", new BigDecimal("50000", new MathContext(2)), new Category(1L)));
 
         // LAPTOPS
-        service.createProduct(new ProductDto("HP Pavillion", "Gray in color", new BigDecimal("500000", new MathContext(2)), (byte)2));
-        service.createProduct(new ProductDto("Dell XPS", "Black in color", new BigDecimal("650000", new MathContext(2)), (byte)2));
-        service.createProduct(new ProductDto("Macbook", "White in color", new BigDecimal("950000", new MathContext(2)), (byte)2));
+        repository.save(new Product("HP Pavillion", "Gray in color", new BigDecimal("500000", new MathContext(2)), new Category(2L)));
+        repository.save(new Product("Dell XPS", "Black in color", new BigDecimal("650000", new MathContext(2)), new Category(2L)));
+        repository.save(new Product("Macbook", "White in color", new BigDecimal("950000", new MathContext(2)), new Category(2L)));
 
         // TELEVISIONS
-        service.createProduct(new ProductDto("LG Flat TV", "Black TV", new BigDecimal("1350000", new MathContext(2)), (byte)3));
-        service.createProduct(new ProductDto("Samsung Flat TV", "White TV", new BigDecimal("2000000", new MathContext(2)), (byte)3));
-        service.createProduct(new ProductDto("Sony Flat TV", "Sony TV", new BigDecimal("1450000", new MathContext(2)), (byte)3));
+        repository.save(new Product("LG Flat TV", "Black TV", new BigDecimal("1350000", new MathContext(2)), new Category(3L)));
+        repository.save(new Product("Samsung Flat TV", "White TV", new BigDecimal("2000000", new MathContext(2)), new Category(3L)));
+        repository.save(new Product("Sony Flat TV", "Sony TV", new BigDecimal("1450000", new MathContext(2)), new Category(3L)));
     }
 
 }

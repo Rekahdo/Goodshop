@@ -17,16 +17,10 @@ public class ProfileController {
 	@Autowired
 	private ProfileService service;
 
-	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId) OR hasRole('ADMIN') OR hasRole('EDITOR')")
-	@PutMapping(path = "", consumes = "application/json")
-	public ResponseEntity<?> editProfile(@PathVariable Long userId, @Valid @RequestBody ProfileDto dto) {
-		return service.editProfile(userId, dto);
-	}
-
-	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId) OR hasRole('ADMIN') OR hasRole('EDITOR')")
-	@PatchMapping(path = "", consumes = "application/json")
-	public ResponseEntity<?> patchProfile(@PathVariable Long userId, @Valid @RequestBody ProfileDto dto) {
-		return service.patchProfile(userId, dto);
+	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId)")
+	@PostMapping(path = "", consumes = "application/json")
+	public ResponseEntity<?> setProfile(@PathVariable Long userId, @Valid @RequestBody ProfileDto dto) {
+		return service.setProfile(userId, dto);
 	}
 
 	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId) OR hasRole('ADMIN') OR hasRole('MODERATOR')")
@@ -35,7 +29,7 @@ public class ProfileController {
 		return service.getProfile(userId);
 	}
 
-	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId) OR hasRole('ADMIN')")
+	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId)")
 	@DeleteMapping(path = "")
 	public ResponseEntity<?> deleteProfile(@PathVariable Long userId) {
 		return service.deleteProfile(userId);

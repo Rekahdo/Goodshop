@@ -23,34 +23,34 @@ public class ErrorResponse {
 
     private interface MultiErrorView extends SingleErrorView {};
 
-    @JsonView(SingleErrorView.class)
+    @JsonView(ErrorResponse.SingleErrorView.class)
     private String exception;
 
-    @JsonView(SingleErrorView.class)
+    @JsonView(ErrorResponse.SingleErrorView.class)
     private String line;
 
-    @JsonView(SingleErrorView.class)
+    @JsonView(ErrorResponse.SingleErrorView.class)
     private int code;
 
-    @JsonView(SingleErrorView.class)
+    @JsonView(ErrorResponse.SingleErrorView.class)
     private HttpStatus status;
 
-    @JsonView(SingleErrorView.class)
+    @JsonView(ErrorResponse.SingleErrorView.class)
     private String message;
 
-    @JsonView(MultiErrorView.class)
+    @JsonView(ErrorResponse.MultiErrorView.class)
     private List<String> messages;
 
-    @JsonView(SingleErrorView.class)
+    @JsonView(ErrorResponse.SingleErrorView.class)
     private int errorCount = 1;
 
-    @JsonView(SingleErrorView.class)
+    @JsonView(ErrorResponse.SingleErrorView.class)
     private String description;
 
-    @JsonView(SingleErrorView.class)
+    @JsonView(ErrorResponse.SingleErrorView.class)
     private Instant timestamp = Instant.now();
 
-    @JsonView(SingleErrorView.class)
+    @JsonView(ErrorResponse.SingleErrorView.class)
     private StackTraceElement[] trace;
 
     @JsonIgnore
@@ -67,13 +67,13 @@ public class ErrorResponse {
                 .map(ObjectError::getDefaultMessage).toList() : Collections.emptyList());
         this.errorCount = (isMultiErrors ? ((BindException) ex).getErrorCount() : 1);
         this.description = request.getDescription(true);
-        this.trace = ex.getStackTrace();
+//        this.trace = ex.getStackTrace();
     }
 
     public MappingJacksonValue fetchMJV() {
         MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(this);
         mappingJacksonValue.setSerializationView((isMultiErrors ?
-                MultiErrorView.class : SingleErrorView.class));
+                ErrorResponse.MultiErrorView.class : ErrorResponse.SingleErrorView.class));
         return mappingJacksonValue;
     }
 

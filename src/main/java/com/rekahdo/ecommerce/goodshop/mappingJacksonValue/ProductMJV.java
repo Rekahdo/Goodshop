@@ -1,20 +1,18 @@
 package com.rekahdo.ecommerce.goodshop.mappingJacksonValue;
 
-import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.stereotype.Component;
 
-public final class ProductMJV {
+@Component
+public final class ProductMJV extends MJV{
 
-	private static final FilterProvider FILTER = new SimpleFilterProvider()
-			.addFilter("productDtoFilter", SimpleBeanPropertyFilter.serializeAllExcept("categoryId"))
-			.addFilter("categoryDtoFilter", SimpleBeanPropertyFilter.filterOutAllExcept("id", "name"));
+	public ProductMJV() {
+		LIST_FILTER = new SimpleFilterProvider()
+				.addFilter("productDtoFilter", SimpleBeanPropertyFilter.filterOutAllExcept("name", "price", "_links"));
 
-	public static <T> MappingJacksonValue filter(T dto) {
-		MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(dto);
-		mappingJacksonValue.setFilters(FILTER);
-		return mappingJacksonValue;
+		SELF = new SimpleFilterProvider()
+				.addFilter("productDtoFilter", SimpleBeanPropertyFilter.serializeAllExcept("categoryId"));
 	}
 
 }

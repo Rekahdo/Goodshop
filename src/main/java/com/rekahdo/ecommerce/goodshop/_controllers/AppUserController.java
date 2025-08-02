@@ -28,16 +28,10 @@ public class AppUserController {
 		return service.loginUser(dto);
 	}
 
-	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId) OR hasRole('ADMIN') OR hasRole('EDITOR')")
+	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId)")
 	@PutMapping(path = "/{userId}", consumes = "application/json")
 	public ResponseEntity<?> editUser(@PathVariable Long userId, @Valid @RequestBody AppUserDto dto) {
 		return service.editUser(userId, dto);
-	}
-
-	@PreAuthorize("@appUserSecurity.isUserAuth(authentication, #userId) OR hasRole('ADMIN') OR hasRole('EDITOR')")
-	@PatchMapping(path = "/{userId}", consumes = "application/json")
-	public ResponseEntity<?> patchUser(@PathVariable Long userId, @Valid @RequestBody AppUserDto dto) {
-		return service.patchUser(userId, dto);
 	}
 
 	@PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")

@@ -1,38 +1,18 @@
 package com.rekahdo.ecommerce.goodshop.mappingJacksonValue;
 
-import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.rekahdo.ecommerce.goodshop._dtos.entities.AppUserDto;
-import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.stereotype.Component;
 
-public final class AppUserMJV {
+@Component
+public final class AppUserMJV extends MJV{
 
-	private static final FilterProvider PUBLIC_FILTER = new SimpleFilterProvider().addFilter("appUserDtoFilter",
-			SimpleBeanPropertyFilter.filterOutAllExcept("id", "username", "roles", "_links"));
+	public AppUserMJV() {
+		LIST_FILTER = new SimpleFilterProvider().addFilter("appUserDtoFilter",
+				SimpleBeanPropertyFilter.filterOutAllExcept("username", "_links"));
 
-	private static final FilterProvider PRIVATE_FILTER = new SimpleFilterProvider().addFilter("appUserDtoFilter",
-			SimpleBeanPropertyFilter.serializeAllExcept("adminKey", "password"));
-
-	private static final FilterProvider PRIVATE_SHOW_PASSWORD_FILTER = new SimpleFilterProvider().addFilter("appUserDtoFilter",
-			SimpleBeanPropertyFilter.serializeAllExcept("adminKey"));
-
-	public static <T> MappingJacksonValue publicFilter(T dto) {
-		MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(dto);
-		mappingJacksonValue.setFilters(PUBLIC_FILTER);
-		return mappingJacksonValue;
-	}
-
-	public static MappingJacksonValue privateFilter(AppUserDto dto) {
-		MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(dto);
-		mappingJacksonValue.setFilters(PRIVATE_FILTER);
-		return mappingJacksonValue;
-	}
-
-	public static MappingJacksonValue privateFilter(AppUserDto dto, boolean showPassword) {
-		MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(dto);
-		mappingJacksonValue.setFilters(showPassword ? PRIVATE_SHOW_PASSWORD_FILTER : PRIVATE_FILTER);
-		return mappingJacksonValue;
+		SELF = new SimpleFilterProvider().addFilter("appUserDtoFilter",
+				SimpleBeanPropertyFilter.serializeAllExcept("adminKey", "password"));
 	}
 
 }

@@ -13,27 +13,26 @@ import lombok.Setter;
 import java.math.BigDecimal;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @JsonFilter("productDtoFilter")
 public class ProductDto extends EntityDto<ProductDto> {
 
-    @NotNull
+    @NotNull(message = "Specify product name")
     private String name;
 
-    @NotNull
+    @NotNull(message = "Specify product description")
     private String description;
 
-    @NotNull
-    private BigDecimal price;
+    @NotNull(message = "Specify product price")
+    private String price;
 
-    @NotNull
-    private byte categoryId;
+    @NotNull(message = "Specify product category id")
+    private Long categoryId;
 
-    private CategoryDto category;
+    private String category;
 
-    public ProductDto(String name, String description, BigDecimal price, byte categoryId) {
+    public ProductDto(String name, String description, String price, Long categoryId) {
         this.name = name;
         this.description = description;
         this.price = price;

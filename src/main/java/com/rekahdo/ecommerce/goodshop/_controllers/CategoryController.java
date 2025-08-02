@@ -2,6 +2,7 @@ package com.rekahdo.ecommerce.goodshop._controllers;
 
 import com.rekahdo.ecommerce.goodshop._dtos.entities.AddressDto;
 import com.rekahdo.ecommerce.goodshop._dtos.entities.CategoryDto;
+import com.rekahdo.ecommerce.goodshop._dtos.paginations.CategoryPageRequestDto;
 import com.rekahdo.ecommerce.goodshop._services.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +26,14 @@ public class CategoryController {
 	}
 
 	@PreAuthorize("hasRole('ADMIN') OR hasRole('EDITOR')")
-	@PutMapping("")
-	public ResponseEntity<?> editCategory(@Valid @RequestBody CategoryDto dto){
-		return service.editCategory(dto);
+	@PutMapping("/{categoryId}")
+	public ResponseEntity<?> editCategory(@PathVariable Long categoryId, @Valid @RequestBody CategoryDto dto){
+		return service.editCategory(categoryId, dto);
 	}
 
 	@GetMapping("")
-	public ResponseEntity<?> getCategories(){
-		return service.getCategories();
+	public ResponseEntity<?> getCategories(@ModelAttribute CategoryPageRequestDto dto){
+		return service.getCategories(dto);
 	}
 
 	@GetMapping("/{categoryId}")

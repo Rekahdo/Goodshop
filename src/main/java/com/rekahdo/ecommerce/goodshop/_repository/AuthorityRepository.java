@@ -10,18 +10,16 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AuthorityRepository extends JpaRepository<Authority, Long> {
+
+    Optional<Authority> findByAppUserId(Long userId);
 
     @Transactional
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("DELETE FROM Authority WHERE appUser.id = :userId")
     void deleteByAppUserId(@Param("userId") Long userId);
-
-    @Transactional
-    @Modifying(flushAutomatically = true, clearAutomatically = true)
-    @Query("DELETE FROM Authority WHERE appUser.id = :userId AND role IN :roles")
-    void deleteAllByAppUserIdAndRoleIn(@Param("userId") Long userId, @Param("roles") List<AuthorityRole> roles);
 
 }

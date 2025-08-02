@@ -12,11 +12,19 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 
 @RestControllerAdvice
-public class Api_ExceptionHandler_Built_In {
+public class Api_ExceptionHandler {
+
+    // API DEFINED EXCEPTIONS
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<?> handleResponseStatusException(ResponseStatusException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(ex, HttpStatus.NOT_FOUND, request);
+        return ResponseEntity.status(ex.getStatusCode()).body(errorResponse.fetchMJV());
+    }
 
     // IN-BUILT DEFINED EXCEPTIONS
     @ExceptionHandler(UsernameNotFoundException.class)
@@ -61,7 +69,7 @@ public class Api_ExceptionHandler_Built_In {
         return ResponseEntity.status(errorResponse.getStatus()).body(errorResponse.fetchMJV());
     }
 
-    @ExceptionHandler(JpaSystemException.class)
+//    @ExceptionHandler(JpaSystemException.class)
     public ResponseEntity<?> handleJpaSystemException(JpaSystemException ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, request);
         return ResponseEntity.status(errorResponse.getStatus()).body(errorResponse.fetchMJV());

@@ -34,7 +34,8 @@ public class Api_SecurityFilterChainConfig {
 				.requestMatchers("/api/v*/*/test/mapper").permitAll()
 				.requestMatchers("/api/v*/users/register").permitAll()
 				.requestMatchers("/api/v*/users/login").permitAll()
-				.requestMatchers(HttpMethod.GET, "/api/v*/categories", "/api/v*/products").permitAll()
+				.requestMatchers("/api/v*/forgot/password/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/api/v*/categories/**", "/api/v*/products/**").permitAll()
 				.requestMatchers("/h2-console/**").permitAll()
 				.anyRequest().authenticated());
 		http.httpBasic(Customizer.withDefaults());

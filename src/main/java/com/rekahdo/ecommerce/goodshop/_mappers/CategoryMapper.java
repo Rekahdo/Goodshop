@@ -1,32 +1,21 @@
 package com.rekahdo.ecommerce.goodshop._mappers;
 
 import com.rekahdo.ecommerce.goodshop._controllers.CategoryController;
+import com.rekahdo.ecommerce.goodshop._controllers.ProductController;
 import com.rekahdo.ecommerce.goodshop._dtos.entities.CategoryDto;
 import com.rekahdo.ecommerce.goodshop._entities.Category;
 import org.mapstruct.*;
 
-import java.util.List;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Mapper(componentModel = "spring")
-public interface CategoryMapper {
+public interface CategoryMapper  extends Api_Mapper<Category, CategoryDto>{
 
-    CategoryController controller = new CategoryController();
-
-    CategoryDto toDto(Category category);
-    Category toEntity(CategoryDto categoryDto);
-    List<CategoryDto> toDtoList(List<Category> categories);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntity(CategoryDto source, @MappingTarget Category target);
-
+    @Override
     @AfterMapping
-    default void afterMappingToDto(@MappingTarget CategoryDto target, Category source){
-
-    }
-
-    @AfterMapping
-    default void afterMappingToEntity(@MappingTarget Category target, CategoryDto source){
-
+    default void afterMappingToDto(@MappingTarget CategoryDto target, Category source) {
+        target.add(linkTo(methodOn(ProductController.class).getProducts(null, source.getId())).withRel("products"));
     }
 
 }

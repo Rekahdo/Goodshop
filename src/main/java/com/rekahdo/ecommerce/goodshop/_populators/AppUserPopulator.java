@@ -1,45 +1,41 @@
 package com.rekahdo.ecommerce.goodshop._populators;
 
-import com.rekahdo.ecommerce.goodshop._dtos.entities.AppUserDto;
+import com.rekahdo.ecommerce.goodshop._entities.AppUser;
 import com.rekahdo.ecommerce.goodshop._repository.AppUserRepository;
-import com.rekahdo.ecommerce.goodshop._services.AppUserService;
-import com.rekahdo.ecommerce.goodshop.enums.AuthorityRole;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.Date;
 
 @Component
 @DependsOn("productPopulator")
 @Profile("dev")
 public class AppUserPopulator {
 
-    private final AppUserService service;
+    @Autowired
+    private AppUserRepository repository;
 
-    @Value("${adminKey}")
-    private String adminKey;
-
-    public AppUserPopulator(AppUserService service) {
-        this.service = service;
-    }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostConstruct
-    private void createUsers(){
-        AppUserDto rekahdo = new AppUserDto("rekahdo", "ppppPP@1", "okaforrichard76@gmail.com")
-                .setRoles(AuthorityRole.ADMIN.getValue()).setAdminKey(adminKey);
-        service.createUser(rekahdo);
-
-        AppUserDto john = new AppUserDto("john", "ppppPP@1", "johnbillion@gmail.com")
-                .setRoles(AuthorityRole.MODERATOR.getValue()).setAdminKey(adminKey);
-        service.createUser(john);
-
-        AppUserDto mary = new AppUserDto("mary", "ppppPP@1", "marynwankwo@gmail.com")
-                .setRoles(AuthorityRole.EDITOR.getValue()).setAdminKey(adminKey);
-        service.createUser(mary);
-
-        AppUserDto paul = new AppUserDto("paul", "ppppPP@1", "paul@gmail.com");
-        service.createUser(paul);
+    private void insertIntoRepository(){
+        repository.save(new AppUser("rekahdo", passwordEncoder.encode("ppppPP@1"), "okaforrichard76@gmail.com", LocalDate.now()));
+        repository.save(new AppUser("john", passwordEncoder.encode("ppppPP@1"), "johnbillion@gmail.com", LocalDate.now()));
+        repository.save(new AppUser("mary", passwordEncoder.encode("ppppPP@1"), "marynwankwo@gmail.com", LocalDate.now()));
+        repository.save(new AppUser("paul", passwordEncoder.encode("ppppPP@1"), "paul@gmail.com", LocalDate.now()));
+        repository.save(new AppUser("andrew", passwordEncoder.encode("ppppPP@1"), "andrew@gmail.com", LocalDate.now()));
+        repository.save(new AppUser("david", passwordEncoder.encode("ppppPP@1"), "dav@gmail.com", LocalDate.now()));
+        repository.save(new AppUser("alice", passwordEncoder.encode("ppppPP@1"), "alice@gmail.com", LocalDate.now()));
+        repository.save(new AppUser("angela", passwordEncoder.encode("ppppPP@1"), "angela@gmail.com", LocalDate.now()));
+        repository.save(new AppUser("ben", passwordEncoder.encode("ppppPP@1"), "ben@gmail.com", LocalDate.now()));
+        repository.save(new AppUser("joe", passwordEncoder.encode("ppppPP@1"), "joe@gmail.com", LocalDate.now()));
     }
 
 }

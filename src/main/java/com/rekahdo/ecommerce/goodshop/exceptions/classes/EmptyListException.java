@@ -1,11 +1,12 @@
 package com.rekahdo.ecommerce.goodshop.exceptions.classes;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
-public class EmptyListException extends Api_Exception {
+public class EmptyListException extends ResponseStatusException {
 
 	public EmptyListException() {
-		super("THE REQUEST RESOURCE HAS AN EMPTY LIST", HttpStatus.NO_CONTENT);
+		super(HttpStatus.NO_CONTENT, "List is empty");
 	}
 
 }
