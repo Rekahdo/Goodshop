@@ -1,0 +1,91 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: user-route
+          uri: http://localhost:1020
+          predicates:
+            - Path=/api/v1/users/**
+          filters:
+            - StripPrefix=0
+
+        - id: authentication-route
+          uri: http://localhost:1030
+          predicates:
+            - Path=/api/v1/authentication/**
+          filters:
+            - StripPrefix=0
+
+        - id: otp-route
+          uri: http://localhost:1040
+          predicates:
+            - Path=/api/v1/otp/**
+          filters:
+            - StripPrefix=0
+
+        - id: message-route
+          uri: http://localhost:1050
+          predicates:
+            - Path=/api/v1/message/send/**
+          filters:
+            - StripPrefix=0
+
+        - id: forgot-password-route
+          uri: http://localhost:1060
+          predicates:
+            - Path=/api/v1/forgot-password/**
+          filters:
+            - StripPrefix=0
+
+        - id: phone-route
+          uri: http://localhost:1070
+          predicates:
+            - Path=/api/v1/phones/**
+          filters:
+            - StripPrefix=0
+
+        - id: profile-route
+          uri: http://localhost:1080
+          predicates:
+            - Path=/api/v1/profile/**
+          filters:
+            - StripPrefix=0
+
+        - id: address-route
+          uri: http://localhost:1090
+          predicates:
+            - Path=/api/v1/addresses/**
+          filters:
+            - StripPrefix=0
+
+        - id: file-route
+          uri: http://localhost:1100
+          predicates:
+            - Path=/api/v1/files/**
+          filters:
+            - StripPrefix=0
+
+        - id: vendor-route
+          uri: http://localhost:1120
+          predicates:
+            - Path=/api/v1/vendors/**
+          filters:
+            - StripPrefix=0
+
+        - id: admin-route
+          uri: http://localhost:1130
+          predicates:
+            - Path=/api/v1/admin/**
+          filters:
+            - StripPrefix=0
+  doc:
+    api-docs:
+      path: /api-docs
+    swagger-ui:
+      path: /swagger-ui
+      disable-swagger-default-url: true
+
+server:
+  port: 1010

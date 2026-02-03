@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <style>
+        .email-body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 50%;
+            min-width: 300px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .email-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .email-content {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .otp {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .email-footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body class="email-body">
+<header class="email-header">
+    <h2 th:text="${title}">OTP Verification</h2>
+</header>
+
+<div class="email-content">
+    <p>Your One-Time Password (OTP) for verification is:</p>
+    <div class="otp" th:text="${otp}">123456</div>
+    <p>This OTP is valid for
+        <strong><span th:text="${expireInMinutes}">0</span> minutes</strong>.
+        Do not share it with anyone.</p>
+    <p>If you didn't request this OTP, please ignore this email.</p>
+</div>
+
+<footer class="email-footer">
+    <p>© 2024 MyApp. All rights reserved.</p>
+</footer>
+</body>
+</html>

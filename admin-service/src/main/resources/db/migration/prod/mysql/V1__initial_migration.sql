@@ -1,0 +1,7 @@
+
+CREATE TABLE admins (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL UNIQUE,
+    role INT NOT NULL,
+    assigned_at DATE NOT NULL
+);

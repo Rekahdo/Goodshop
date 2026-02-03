@@ -1,0 +1,25 @@
+CREATE DOCKER CONTAINER WITH DOCKER COMMAND FOR MYSQL CONTAINER
+1. Open Docker on system
+2. Run command on Terminal
+docker run --name GoodshopDK --hostname 127.0.0.1 --publish 3302:3306 --env MYSQL_ROOT_PASSWORD=password --detach mysql:8-oracle
+
+Note: --publish 3302:3306// url_port:mysql_port
+
+MYSQL WORKBENCH CONNECTION WITH MYSQL DOCKER CONTAINER
+- Connection Name: GoodshopDK
+- hostname: 127.0.0.1
+- port: 3302
+- username: root
+- password: password
+- Default Schema (DB Name): null
+
+APPLICATION PROPERTIES FILE
+# MYSQL DATABSE CONFIG FOR DEV
+spring.datasource.url=jdbc:mysql://localhost:3302/Goodshop_Dev?createDatabaseIfNotExist=true
+spring.datasource.username=root
+spring.datasource.password=password
+
+# MYSQL DATABSE CONFIG
+spring.datasource.url=jdbc:mysql://localhost:3302/Goodshop?createDatabaseIfNotExist=true
+spring.datasource.username=root
+spring.datasource.password=password
