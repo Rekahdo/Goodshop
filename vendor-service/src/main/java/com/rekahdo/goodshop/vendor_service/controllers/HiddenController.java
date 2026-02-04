@@ -3,6 +3,7 @@ package com.rekahdo.goodshop.vendor_service.controllers;
 import com.rekahdo.goodshop.vendor_service.enums.UnresolvedReason;
 import com.rekahdo.goodshop.vendor_service.services.*;
 import com.rekahdo.goodshop.vendor_service.utilities.ApiKey;
+import com.rekahdo.goodshop.vendor_service.utilities.VendorUtil;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,12 +33,20 @@ public class HiddenController {
 		return service.retrieveURIs(userId);
 	}
 
+	@GetMapping("/validate-approval")
+	@ResponseStatus(HttpStatus.OK)
+	public void validate(@RequestParam Long userId,
+						 @RequestHeader(required = false) String apiKey){
+		ApiKey.validate(apiKey);
+		service.approvedVendor(userId);
+	}
+
 	@GetMapping("/validate-existence")
 	@ResponseStatus(HttpStatus.OK)
 	public void validateExistence(@RequestParam Long userId,
 								  @RequestHeader(required = false) String apiKey){
 		ApiKey.validate(apiKey);
-		service.vendorExistence(userId);
+		VendorUtil.findOrThrow(userId);
 	}
 
 	@PutMapping(path = "/add-unresolved")

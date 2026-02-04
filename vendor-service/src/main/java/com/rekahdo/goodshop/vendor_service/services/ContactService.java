@@ -29,7 +29,7 @@ public class ContactService {
         mapper.updateEntity(request, contact);
         repository.save(contact);
 
-        Vendor vendor = vendorService.findAndThrow(userId);
+        Vendor vendor = vendorService.findOrThrow(userId);
         vendor.setContact(new Contact(contact.getId()));
         vendorRepository.save(vendor);
 
@@ -52,15 +52,21 @@ public class ContactService {
     }
 
     public void setPhoneAdded(Long userId, boolean added){
-        repository.setPhoneAdded(userId, added);
+        Contact contact = find(userId);
+        contact.setPhoneAdded(added);
+        repository.save(contact);
     }
 
     public void setEmergencyPhoneAdded(Long userId, boolean added){
-        repository.setEmergencyPhoneAdded(userId, added);
+        Contact contact = find(userId);
+        contact.setEmergencyPhoneAdded(added);
+        repository.save(contact);
     }
 
     public void setIdProofAdded(Long userId, boolean added){
-        repository.setIdProofAdded(userId, added);
+        Contact contact = find(userId);
+        contact.setIdProofAdded(added);
+        repository.save(contact);
     }
 
     public Contact find(Long userId){

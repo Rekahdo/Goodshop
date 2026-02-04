@@ -29,17 +29,17 @@ public class DisplayPictureController {
     private final UserServiceClient userService;
 
     // DISPLAY PICTURE
-    @PostMapping(path = "/set/dp", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/upload/display-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PreAuthorize("#userId == authentication.principal.userId")
     public ResponseEntity<Void> upload(@RequestParam Long userId,
-                       @RequestParam("image") @ImageType MultipartFile file) {
+                                       @RequestParam("image") @ImageType MultipartFile file) {
         userService.validate(userId, ApiKey.USER_SERVICE);
         service.upload(userId, file, Purpose.DISPLAY_PICTURE);
         return ResponseEntity.accepted().build();
     }
 
-    @GetMapping(path = "/retrieve/dp", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
+    @GetMapping(path = "/retrieve/display-picture", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("#userId == authentication.principal.userId Or hasRole('ADMIN')")
     public ResponseEntity<MappingJacksonValue> retrieve(@RequestParam Long userId) {
@@ -47,7 +47,7 @@ public class DisplayPictureController {
                 .body(service.retrieve(userId, Purpose.DISPLAY_PICTURE));
     }
 
-    @DeleteMapping(path = "/delete/dp")
+    @DeleteMapping(path = "/delete/display-picture")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("#userId == authentication.principal.userId")
     public ResponseEntity<Void> delete(@RequestParam Long userId) {

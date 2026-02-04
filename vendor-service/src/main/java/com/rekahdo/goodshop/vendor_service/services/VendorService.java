@@ -9,6 +9,7 @@ import com.rekahdo.goodshop.vendor_service.enums.ApprovalStatus;
 import com.rekahdo.goodshop.vendor_service.enums.UnresolvedReason;
 import com.rekahdo.goodshop.vendor_service.exceptions.classes.VendorApplicationStatusException;
 import com.rekahdo.goodshop.vendor_service.exceptions.classes.VendorApprovedException;
+import com.rekahdo.goodshop.vendor_service.exceptions.classes.VendorDeniedException;
 import com.rekahdo.goodshop.vendor_service.exceptions.classes.VendorNotFoundException;
 import com.rekahdo.goodshop.vendor_service.feign.clients.AddressServiceClient;
 import com.rekahdo.goodshop.vendor_service.feign.clients.AdminServiceClient;
@@ -17,7 +18,7 @@ import com.rekahdo.goodshop.vendor_service.feign.clients.PhoneServiceClient;
 import com.rekahdo.goodshop.vendor_service.mappers.VendorMapper;
 import com.rekahdo.goodshop.vendor_service.repositories.VendorRepository;
 import com.rekahdo.goodshop.vendor_service.utilities.ApiKey;
-import com.rekahdo.goodshop.vendor_service.utilities.VendorIdGenerator;
+import com.rekahdo.goodshop.vendor_service.utilities.IdGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.EntityModel;
@@ -45,34 +46,50 @@ public class VendorService {
     private final PhoneServiceClient phoneService;
     private final FileServiceClient fileService;
 
-    public void add(Long userId, BusinessRequest request) {
+    public void apply(Long userId, BusinessRequest request) {
         Optional<Vendor> optional = repository.findByUserId(userId);
 
         if(optional.isPresent()) {
-            if (Objects.equals(ApprovalStatus.APPROVED.index, optional.get().getApprovalStatus()))
+            Vendor vendor = optional.get();
+
+            if (vendor.isApproved())
                 throw new VendorApprovedException(userId);
+            else if(vendor.isDenied())
+                throw new VendorDeniedException(userId);
             else
-                throw new VendorApplicationStatusException(userId, optional.get().getApprovalStatus());
+                throw new VendorApplicationStatusException(userId, vendor.getApprovalStatus());
         }
 
-        Vendor vendor = new Vendor(userId);
-        vendor.setUid(VendorIdGenerator.generateId());
-        vendor.setApprovalStatus(ApprovalStatus.PENDING.index);
-        vendor.setRegisteredAt(LocalDateTime.now());
-        repository.save(vendor);
-
+        repository.save(new Vendor(userId));
         businessService.set(userId, request);
 
         // Add initial unresolved for user when first applied to become a vendor
         unresolvedService.add(userId, List.of(
-            UnresolvedReason.CONTACT_PERSON_INFO_NOT_PROVIDED,
-            UnresolvedReason.BANK_INFO_NOT_PROVIDED
+                UnresolvedReason.CONTACT_PERSON_INFO_NOT_PROVIDED,
+                UnresolvedReason.BANK_INFO_NOT_PROVIDED
         ));
+    }
 
+    public void reapply(Long userId) {
+        Optional<Vendor> optional = repository.findByUserId(userId);
+
+        if(optional.isPresent()){
+            Vendor vendor = optional.get();
+            if(vendor.isPendingReview() || vendor.isBeenReviewed())
+                throw new VendorApplicationStatusException(userId, optional.get().getApprovalStatus());
+            else if(vendor.isApproved())
+                throw new VendorApprovedException(userId);
+            else {
+                vendor.setApprovalStatus(ApprovalStatus.PENDING.index);
+                repository.save(vendor);
+            }
+        }else {
+            throw new VendorNotFoundException(userId);
+        }
     }
 
     public void approvalStatus(Long userId, ApprovalStatus status) {
-        Vendor vendor = findAndThrow(userId);
+        Vendor vendor = findOrThrow(userId);
 
         // If new and old status are not the same, enter
         if(!Objects.equals(status.index, vendor.getApprovalStatus())){
@@ -109,7 +126,7 @@ public class VendorService {
         repository.deleteByUserId(userId);
     }
 
-    public Vendor findAndThrow(Long userId) {
+    public Vendor findOrThrow(Long userId) {
         return repository.findByUserId(userId)
                 .orElseThrow(() -> new VendorNotFoundException(userId));
     }

@@ -19,6 +19,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.validation.annotation.Validated;
@@ -38,9 +39,16 @@ public class VendorController {
 
 	@PostMapping(path = "/apply", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("#userId == authentication.principal.userId AND hasRole('USER')")
-	public ResponseEntity<Long> add(@AcceptableId @RequestParam Long userId,
-									@RequestBody @Valid BusinessRequest request){
-		service.add(userId, request);
+	public ResponseEntity<Long> apply(@AcceptableId @RequestParam Long userId,
+									  @RequestBody @Valid BusinessRequest request){
+		service.apply(userId, request);
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping(path = "/re-apply")
+	@PreAuthorize("#userId == authentication.principal.userId AND hasRole('USER')")
+	public ResponseEntity<Long> reapply(@AcceptableId @RequestParam Long userId){
+		service.reapply(userId);
 		return ResponseEntity.ok().build();
 	}
 

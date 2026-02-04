@@ -1,6 +1,8 @@
 package com.rekahdo.goodshop.vendor_service.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.rekahdo.goodshop.vendor_service.enums.ApprovalStatus;
+import com.rekahdo.goodshop.vendor_service.utilities.IdGenerator;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +10,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @NoArgsConstructor
 @Getter
@@ -50,6 +53,25 @@ public class Vendor implements ApiEntity{
 
 	public Vendor(Long userId) {
 		this.userId = userId;
+		setUid(IdGenerator.generateId());
+		setApprovalStatus(ApprovalStatus.PENDING.index);
+		setRegisteredAt(LocalDateTime.now());
+	}
+
+	public boolean isPendingReview(){
+		return Objects.equals(ApprovalStatus.PENDING.index, approvalStatus);
+	}
+
+	public boolean isBeenReviewed(){
+		return Objects.equals(ApprovalStatus.ON_GOING.index, approvalStatus);
+	}
+
+	public boolean isDenied(){
+		return Objects.equals(ApprovalStatus.DENIED.index, approvalStatus);
+	}
+
+	public boolean isApproved(){
+		return Objects.equals(ApprovalStatus.APPROVED.index, approvalStatus);
 	}
 
 }

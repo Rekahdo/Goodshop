@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +27,7 @@ public class UnresolvedService {
     public void add(Long userId, List<UnresolvedReason> reasons) {
         if(!reasons.isEmpty()) {
             List<Unresolved> list = repository.findByUserId(userId);
-            Vendor vendor = vendorService.findAndThrow(userId);
+            Vendor vendor = vendorService.findOrThrow(userId);
 
             if(list.isEmpty())
                 repository.saveAll(reasons.stream()
@@ -49,7 +47,7 @@ public class UnresolvedService {
         Unresolved unresolved = find(userId, reason);
 
         if(unresolved == null) {
-            Vendor vendor = vendorService.findAndThrow(userId);
+            Vendor vendor = vendorService.findOrThrow(userId);
             repository.save(new Unresolved(reason, vendor));
         }
     }

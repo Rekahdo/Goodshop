@@ -17,9 +17,10 @@ public class ProdPopulator {
 
     @PostConstruct
     private void insert() {
-        if (repository.findAll().isEmpty()) {
-            repository.save(new Admin(1L, Role.ADMIN));
-        }
+        if (!repository.findAll().isEmpty())
+            return;
+
+        repository.save(new Admin(1L, Role.ADMIN));
     }
 
 }

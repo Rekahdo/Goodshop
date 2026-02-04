@@ -1,14 +1,20 @@
 package com.rekahdo.goodshop.vendor_service.services;
 
 import com.rekahdo.goodshop.vendor_service.controllers.VendorController;
+import com.rekahdo.goodshop.vendor_service.entities.Vendor;
+import com.rekahdo.goodshop.vendor_service.enums.ApprovalStatus;
+import com.rekahdo.goodshop.vendor_service.exceptions.classes.VendorApplicationStatusException;
+import com.rekahdo.goodshop.vendor_service.exceptions.classes.VendorDeniedException;
 import com.rekahdo.goodshop.vendor_service.exceptions.classes.VendorNotFoundException;
 import com.rekahdo.goodshop.vendor_service.mappers.VendorMapper;
 import com.rekahdo.goodshop.vendor_service.repositories.VendorRepository;
+import com.rekahdo.goodshop.vendor_service.utilities.VendorUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -28,10 +34,14 @@ public class HiddenService {
         );
     }
 
+    public void approvedVendor(Long userId) {
+        Vendor vendor = VendorUtil.findOrThrow(userId);
+
+
+    }
+
     public void vendorExistence(Long userId) {
-        if(!repository.existsByUserId(userId)){
-            throw new VendorNotFoundException(userId);
-        }
+        VendorUtil.findOrThrow(userId);
     }
 
 }

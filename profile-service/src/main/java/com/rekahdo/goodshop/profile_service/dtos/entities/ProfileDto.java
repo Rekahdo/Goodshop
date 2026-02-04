@@ -5,13 +5,15 @@ import com.rekahdo.goodshop.profile_service.feign.dtos.PhoneClient;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import java.net.URI;
 import java.time.LocalDate;
 
 @Getter
 @Setter
-public class ProfileDto extends RepresentationModel<ProfileDto> implements ApiDto{
+@Relation(collectionRelation = "profiles", itemRelation = "profile")
+public class ProfileDto implements ApiDto{
 
     private Long id;
     private String firstName;
@@ -20,8 +22,6 @@ public class ProfileDto extends RepresentationModel<ProfileDto> implements ApiDt
     private LocalDate dateOfBirth;
     private Integer age;
     private Gender gender;
-    private URI user;
-    private URI phone;
-    private URI address;
+    private Long userId;
 
 }

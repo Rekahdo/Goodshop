@@ -42,7 +42,7 @@ public class BusinessService {
         mapper.updateEntity(request, business);
         repository.save(business);
 
-        Vendor vendor = vendorService.findAndThrow(userId);
+        Vendor vendor = vendorService.findOrThrow(userId);
         vendor.setBusiness(new Business(business.getId()));
         vendorRepository.save(vendor);
 
@@ -79,14 +79,20 @@ public class BusinessService {
     }
 
     public void setPhoneAdded(Long userId, boolean added){
-        repository.setPhoneAdded(userId, added);
+        Business business = find(userId);
+        business.setPhoneAdded(added);
+        repository.save(business);
     }
 
     public void setAddressAdded(Long userId, boolean added){
+        Business business = find(userId);
+        business.setAddressAdded(added);
         repository.setAddressAdded(userId, added);
     }
 
     public void setCertificateAdded(Long userId, boolean added){
+        Business business = find(userId);
+        business.setCertificateAdded(added);
         repository.setCertificateAdded(userId, added);
     }
 

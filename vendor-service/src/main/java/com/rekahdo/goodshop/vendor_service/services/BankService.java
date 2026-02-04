@@ -22,11 +22,11 @@ public class BankService {
     private final UnresolvedService unresolvedService;
 
     public Long set(Long userId, BankRequest request) {
-        Bank bank = retrieve(userId);
+        Bank bank = find(userId);
         mapper.updateEntity(request, bank);
         repository.save(bank);
 
-        Vendor vendor = vendorService.findAndThrow(userId);
+        Vendor vendor = vendorService.findOrThrow(userId);
         vendor.setBank(new Bank(bank.getId()));
         vendorRepository.save(vendor);
 
@@ -40,10 +40,12 @@ public class BankService {
     }
 
     public void setAddressAdded(Long userId, boolean added){
-        repository.setAddressAdded(userId, added);
+        Bank bank = find(userId);
+        bank.setAddressAdded(added);
+        repository.save(bank);
     }
 
-    public Bank retrieve(Long userId){
+    public Bank find(Long userId){
         return repository.findByUserId(userId).orElseGet(Bank::new);
     }
 
